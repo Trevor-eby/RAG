@@ -1,1 +1,3 @@
-# RAG
+RagNotes is a local Retrieval-Augmented Generation (RAG) app built with Streamlit and powered by LangChain, ChromaDB, and Ollama. It lets you upload documents (e.g., PDFs or text files), ask questions, and get AI-generated answers grounded in your study materials.
+
+The goal for this is to implement PathRAG into an application that will help me study. Using PathRAG will allow me to use AI to retrieve information from my notes with accuracy and relevance.
