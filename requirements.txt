@@ -1,0 +1,13 @@
+# Core app
+streamlit
+langchain
+chromadb
+ollama
+python-dotenv
+
+# Optional or commonly used
+pypdf         # if you process PDFs
+tqdm          # progress bars for file uploads
+watchdog      # file change detection
+unstructured  # document parsing (for generic file types)
+langchain-community
