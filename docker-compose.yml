@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/chroma:/app/chroma  # Persist Chroma DB
+    environment:
+      - LANGCHAIN_TRACING_V2=false
