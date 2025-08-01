@@ -7,6 +7,7 @@ old/
 
 # LangChain / ChromaDB
 chroma/                    # Vector store directory
+backend/chroma
 *.db
 *.sqlite
 *.pkl
