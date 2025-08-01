@@ -1,4 +1,5 @@
 import argparse
+import sys
 from langchain_chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
 from langchain_ollama import OllamaLLM
@@ -44,12 +45,14 @@ def query_rag(query_text: str):
     sources = [doc.metadata.get("id", None) for doc, _score in results]
     formatted_response = f"\nResponse: {response_text}\n\nSources: {sources}\n"
     print(formatted_response)
+    sys.stdout.flush()
     return response_text
 
 # CLI usage for debugging/testing
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Query RAG system from CLI")
-    parser.add_argument("query_text", type=str, help="The question to ask.")
-    args = parser.parse_args()
+    ...
+    #parser = argparse.ArgumentParser(description="Query RAG system from CLI")
+    #parser.add_argument("query_text", type=str, help="The question to ask.")
+    #args = parser.parse_args()
 
-    query_rag(args.query_text)
+    #query_rag(args.query_text)

@@ -13,37 +13,73 @@ const createMessageElement = (content, ...classes) => {
     div.classList.add("message", ...classes);
     div.innerHTML = content;
     return div;
+};
+
+//Generate response
+async function generateResponse(question) {
+    const response = await fetch("http://localhost:8000/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({ query_text: question }),
+    });
+
+    const data = await response.json();
+    return data.response;
 }
 
 //Handle outgoing user messages
-const handleOutgoingMessage = (e) => {
+const handleOutgoingMessage = async (e) => {
     e.preventDefault();
-    userData.message = messageInput.value.trim();
+    const message = messageInput.value.trim();
+    //userData.message = messageInput.value.trim();
+    if(!message) return;
+
+    //Clears input
     messageInput.value = "";
 
-    //Create and display user message
-    const messageContent = `<div class="message-text"></div>`;
+    // Show user message immediately
+    const userMessageDiv = createMessageElement(`<div class="message-text">${message}</div>`, "user-message");
+    chatBody.appendChild(userMessageDiv);
 
-    const outgoingMessageDiv = createMessageElement(messageContent, "user-message");
-    outgoingMessageDiv.querySelector(".message-text").textContent = userData.message;
-    chatBody.appendChild(outgoingMessageDiv);
+    // Add loading indicator (thinking...)
+    const loadingDiv = createMessageElement(
+        `<i class="message-icon">
+            <i class="material-symbols-rounded">sentiment_satisfied</i>
+        </i>
+        <div class="message-text">
+            <div class="thinking-indicator">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>`,
+        "response-message",
+        "thinking"
+    );
+    chatBody.appendChild(loadingDiv);
 
-    //Simulate response with thinking indicator after a delay
-    setTimeout(() => {
-        const messageContent = `<i class="message-icon">
-                    <i class="material-symbols-rounded">sentiment_satisfied</i>
-                </i>
-                <div class="message-text">
-                    <div class="thinking-indicator">
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                        <div class="dot"></div>
-                    </div>
-                </div>`;
+    //Await the actual response
+    const responseText = await generateResponse(message);
 
-        const incomingMessageDiv = createMessageElement(messageContent, "response-message", "thinking");
-        chatBody.appendChild(incomingMessageDiv);
-    }, 600);
+    // Scroll to bottom
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    try {
+        // Replace loading indicator with response
+        loadingDiv.classList.remove("thinking");
+        loadingDiv.innerHTML = `<div class="message-text">${responseText}</div>`;
+
+        // Scroll to bottom again after response
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    catch (error) {
+        loadingDiv.classList.remove("thinking");
+        loadingDiv.innerHTML = `<div class="message-text">Error getting response.</div>`;
+        console.error("Error:", error);
+    }
+
+    // Scroll to bottom again
+    chatBody.scrollTop = chatBody.scrollHeight;
 }
 
 //Handle Enter key press for sending messages
@@ -54,4 +90,7 @@ messageInput.addEventListener("keydown", (e) => {
     }
 });
 
-sendMessageButton.addEventListener("click", (e) => handleOutgoingMessage(e))
+// Handle send button click
+sendMessageButton.addEventListener("click", (e) => {
+    handleOutgoingMessage(e);
+});
