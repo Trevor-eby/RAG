@@ -2,8 +2,8 @@ from fastapi import FastAPI, Request, UploadFile, File
 from fastapi import HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-#from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+#from fastapi.staticfiles import StaticFiles
 from backend.query_data import query_rag
 from backend.file_processing import process_and_add_file_to_db
 import os
@@ -22,11 +22,11 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     query_text: str
 
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+#app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
-# @app.get("/")
-# def read_index():
-#     return FileResponse("frontend/webfront.html")
+@app.get("/")
+def read_index():
+    return FileResponse("frontend/webfront.html")
 
 @app.post("/ask")
 def ask_question(request: QueryRequest):
