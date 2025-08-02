@@ -3,6 +3,8 @@ const messageInput = document.querySelector(".message-input");
 const sendMessageButton = document.querySelector("#send-message");
 const fileInput = document.querySelector("#file-input");
 
+const BASE_URL = window.location.origin;
+
 const userData = {
     message: null
 }
@@ -18,7 +20,7 @@ const createMessageElement = (content, ...classes) => {
 
 //Generate response
 async function generateResponse(question) {
-    const response = await fetch("http://127.0.0.1:8000/ask", {
+    const response = await fetch(`${BASE_URL}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json"},
         body: JSON.stringify({ query_text: question }),
@@ -117,7 +119,7 @@ fileInput.addEventListener("change", async () => {
     chatBody.scrollTop = chatBody.scrollHeight;
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/upload", {
+        const response = await fetch(`${BASE_URL}/upload`, {
         method: "POST",
         body: formData,
     });
