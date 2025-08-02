@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt ./backend/requirements.txt
+COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip install --upgrade pip && pip install --no-cache-dir -r ./backend/requirements.txt
 
 COPY . .
