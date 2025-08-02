@@ -16,6 +16,18 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 # Copy your FastAPI app code
 COPY . .
+COPY backend ./backend
+COPY api.py .
+COPY file_processing.py
+COPY get_embedding_function.py
+COPY query_data.py
+
+COPY frontend ./frontend
+COPY script.js
+COPY style.css
+COPY webfront.html
+
+COPY ./chroma
 
 # Expose the port (mainly for local use)
 EXPOSE $PORT
