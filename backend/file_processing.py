@@ -152,8 +152,10 @@ def process_and_add_file_to_db(file_path: str, pdf_loader_preference: str = "aut
         new_ids = [chunk.metadata["id"] for chunk in new_chunks]
         db.add_documents(new_chunks, ids=new_ids)
         print(f"✓ Added {len(new_chunks)} new chunks from {os.path.basename(file_path)}")
+        return True
     else:
         print(f"No new chunks to add for {os.path.basename(file_path)}")
+        return False
 
 def load_pdf_with_specific_loader(file_path: str, loader_type: str):
     """Load PDF with a specific loader."""

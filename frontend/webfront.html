@@ -34,7 +34,10 @@
             <form action="#" class="chat-form">
                 <textarea placeholder="Ask a question..." class="message-input" required></textarea>
                 <div class="chat-controls">
-                    <button type = "button" class="material-symbols-rounded">upload_file</button>
+                    <div class="file-upload-wrapper">
+                        <input type="file" accept=".pdf,.doc,.docx,.txt" id="file-input" hidden>
+                        <button type = "button" id="file-upload" class="material-symbols-rounded">upload_file</button>
+                    </div>
                     <button type = "submit" id="send-message" class="material-symbols-rounded">arrow_upward</button>
                 </div>
             </form>

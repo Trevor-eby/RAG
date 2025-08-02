@@ -1,6 +1,7 @@
 const chatBody = document.querySelector(".chat-body");
 const messageInput = document.querySelector(".message-input");
 const sendMessageButton = document.querySelector("#send-message");
+const fileInput = document.querySelector("#file-input");
 
 const userData = {
     message: null
@@ -17,7 +18,7 @@ const createMessageElement = (content, ...classes) => {
 
 //Generate response
 async function generateResponse(question) {
-    const response = await fetch("http://localhost:8000/ask", {
+    const response = await fetch("http://127.0.0.1:8000/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json"},
         body: JSON.stringify({ query_text: question }),
@@ -90,7 +91,69 @@ messageInput.addEventListener("keydown", (e) => {
     }
 });
 
+fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    console.log("Uploading file:", file.name);
+
+    const fileMessageDiv = document.createElement("div");
+    fileMessageDiv.classList.add("message", "user-message");
+
+    const userMessageDiv = createMessageElement(`
+        <div class="message-text">
+            <i class="message-icon">
+                <i class="material-symbols-rounded">file_present</i>
+            </i>
+            ${file.name}
+        </div>`, "user-message");
+    chatBody.appendChild(userMessageDiv);
+
+
+    chatBody.appendChild(fileMessageDiv);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/upload", {
+        method: "POST",
+        body: formData,
+    });
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+        let errorMsg = "Unknown error";
+        try {
+            const errorResult = await response.json();
+            errorMsg = errorResult.detail || JSON.stringify(errorResult);
+        } 
+        catch {
+            errorMsg = await response.text();
+        }
+        throw new Error(errorMsg);
+    }
+
+    const result = await response.json();
+    console.log("Upload success:", result);
+    alert(result.message || "File uploaded successfully!");
+
+    const chatBox = document.querySelector(".chat-body");
+    const userMessage = document.createElement("div");
+    userMessage.className = "message user-message";
+
+    } 
+    catch (error) {
+        console.error("Upload failed:", error);
+        //alert("File upload failed: " + error.message);
+    }
+});
+
 // Handle send button click
 sendMessageButton.addEventListener("click", (e) => {
     handleOutgoingMessage(e);
 });
+
+document.querySelector("#file-upload").addEventListener("click", () => fileInput.click());
