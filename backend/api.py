@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-#from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles
 from backend.query_data import query_rag
 from backend.file_processing import process_and_add_file_to_db
 import os
@@ -22,7 +22,7 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     query_text: str
 
-#app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
 @app.get("/")
 def read_index():
