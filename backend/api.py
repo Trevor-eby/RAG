@@ -56,3 +56,8 @@ async def upload_file(file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+import uvicorn
+
+if __name__ == "__main__":
+    uvicorn.run("backend.api:app", host="0.0.0.0", port=8080)
