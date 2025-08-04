@@ -5,11 +5,14 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib/apt/lists/*
 
 COPY backend/requirements.txt ./backend/requirements.txt
+
 RUN pip install --upgrade pip && pip install --no-cache-dir -r ./backend/requirements.txt
 
 COPY . .
 
+RUN chmod +x start.sh
+
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["sh", "-c", "uvicorn backend.api:app --host 0.0.0.0 --port $PORT"]
+CMD ["./start.sh"]

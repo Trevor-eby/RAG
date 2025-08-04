@@ -22,8 +22,10 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     query_text: str
 
+#Serve static files
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
+#Home page
 @app.get("/")
 def read_index():
     return FileResponse("frontend/webfront.html")
