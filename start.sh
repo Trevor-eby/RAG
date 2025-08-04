@@ -6,7 +6,7 @@ source .env
 set +a
 
 # Check if variables are set
-if [[ -z "$SSH_USERNAME" || -z "$SSH_REMOTE_IP" ]]; then
+if [[ -z "$REMOTE_USER" || -z "$REMOTE_HOST" ]]; then
   echo "Missing SSH_USERNAME or SSH_REMOTE_IP in .env"
   exit 1
 fi
