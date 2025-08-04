@@ -13,4 +13,4 @@ COPY . .
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["sh", "-c", "uvicorn api:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8080"]
