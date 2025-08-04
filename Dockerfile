@@ -9,6 +9,7 @@ COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip install --upgrade pip && pip install --no-cache-dir -r ./backend/requirements.txt
 
 COPY . .
+COPY .env .env
 
 RUN chmod +x start.sh
 
