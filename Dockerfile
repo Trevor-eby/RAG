@@ -10,9 +10,7 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r ./backend/require
 
 COPY . .
 
-RUN chmod +x start.sh
-
 ENV PORT=8080
 EXPOSE 8080
 
-CMD ["./start.sh"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
