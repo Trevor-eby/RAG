@@ -7,18 +7,21 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
+# Set working directory
 WORKDIR /app
 
-# Copy requirements and install
+# Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy rest of the app
+# Copy rest of the application code
 COPY . .
 
-# Expose API port
+# Make start.sh executable
+RUN chmod +x start.sh
+
+# Expose FastAPI port
 EXPOSE 8080
 
-# Start FastAPI app
-CMD ["python", "backend/api.py"]
+# Run app using the start.sh script
+CMD ["./start.sh"]
