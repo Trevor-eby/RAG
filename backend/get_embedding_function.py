@@ -30,5 +30,5 @@ class RemoteEmbedding:
 
 # Usage example:
 def get_embedding_function():
-    API_URL = "http://localhost:11434"  # replace with your actual URL
+    API_URL = " http://127.0.0.1:11434/api/tags"  # replace with your actual URL
     return RemoteEmbedding(API_URL)
