@@ -20,14 +20,13 @@ const createMessageElement = (content, ...classes) => {
 
 //Generate response
 async function generateResponse(message) {
-  try {
-    const response = await fetch("/ask", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query: message }),
+    try {
+        const response = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query_text: message })
     });
+
 
     if (!response.ok) {
       const text = await response.text();  // Get plain text error
