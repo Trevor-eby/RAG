@@ -21,7 +21,7 @@ const createMessageElement = (content, ...classes) => {
 //Generate response
 async function generateResponse(message) {
     try {
-        const response = await fetch('/ask', {
+       const response = await fetch('https://ragnotes-423327176527.us-east4.run.app/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query_text: message })
