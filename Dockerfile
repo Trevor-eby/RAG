@@ -1,39 +1,22 @@
-# Start from Ubuntu base
-FROM ubuntu:22.04
+# Use Ollama as base image
+FROM ollama/ollama
 
-# Prevent prompts
-ENV DEBIAN_FRONTEND=noninteractive
+# Install Python and other tools
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip && \
+    pip3 install --upgrade pip
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    wget \
-    unzip \
-    git \
-    python3 \
-    python3-pip \
-    python3-venv \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Ollama
-RUN curl -fsSL https://ollama.com/install.sh | bash
-
-# Set up working directory
+# Set workdir
 WORKDIR /app
 
 # Copy your code
 COPY . .
 
 # Install Python dependencies
-RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
-# Download your model (e.g., gemma3)
-RUN ollama pull gemma:latest
+# Expose Ollama's port
+EXPOSE 11434
 
-# Expose the port
-EXPOSE 8080
-
-# Entrypoint
-CMD ["./start.sh"]
+# Run Ollama in the background and then start your app
+CMD ollama serve & sleep 5 && python3 backend/api.py
