@@ -41,10 +41,10 @@ def query_rag(query_text: str):
 
     #model = OllamaLLM(model="gemma3", host="host.docker.internal", port=11434)
     
-    OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "localhost")
-    OLLAMA_PORT = int(os.environ.get("OLLAMA_PORT", "11434"))
+    #OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "localhost")
+    #OLLAMA_PORT = int(os.environ.get("OLLAMA_PORT", "11434"))
 
-    model = OllamaLLM(model="gemma3", host=OLLAMA_HOST, port=OLLAMA_PORT)
+    model = OllamaLLM(model="gemma", host="localhost", port=11434)
 
     try:
         response_text = model.invoke(prompt)

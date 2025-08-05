@@ -1,16 +1,39 @@
-FROM python:3.11-slim
+# Start from Ubuntu base
+FROM ubuntu:22.04
 
+# Prevent prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    unzip \
+    git \
+    python3 \
+    python3-pip \
+    python3-venv \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.com/install.sh | bash
+
+# Set up working directory
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y build-essential curl && rm -rf /var/lib/apt/lists/*
-
-COPY backend/requirements.txt ./backend/requirements.txt
-
-RUN pip install --upgrade pip && pip install --no-cache-dir -r ./backend/requirements.txt
-
+# Copy your code
 COPY . .
 
-ENV PORT=8080
+# Install Python dependencies
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
+
+# Download your model (e.g., gemma3)
+RUN ollama pull gemma:latest
+
+# Expose the port
 EXPOSE 8080
 
-CMD ["uvicorn", "backend.api:app", "--host", "0.0.0.0", "--port", "8080"]
+# Entrypoint
+CMD ["./start.sh"]

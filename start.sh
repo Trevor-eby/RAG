@@ -1,15 +1,11 @@
 #!/bin/bash
+set -e
 
-# Load variables from .env
-set -a
-source .env
-set +a
+# Start Ollama in the background
+ollama serve &
 
-# Check if variables are set
-if [[ -z "$REMOTE_USER" || -z "$REMOTE_HOST" ]]; then
-  echo "Missing SSH_USERNAME or SSH_REMOTE_IP in .env"
-  exit 1
-fi
+# Wait a few seconds to ensure Ollama is ready
+sleep 5
 
-# Starts the reverse SSH tunnel
-ssh -N -R 11434:localhost:11434 $REMOTE_USER@$REMOTE_HOST
+# Start FastAPI app
+exec uvicorn backend.api:app --host 0.0.0.0 --port 8080
