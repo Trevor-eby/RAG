@@ -1,11 +1,16 @@
 import argparse
 import sys
+import os
 from langchain_chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
 from langchain_ollama import OllamaLLM
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 
 from backend.get_embedding_function import get_embedding_function
+
+# Optional: load .env if running locally
+from dotenv import load_dotenv
+load_dotenv()
 
 CHROMA_PATH = "chroma"
 
@@ -34,7 +39,13 @@ def query_rag(query_text: str):
     prompt = prompt_template.format(context=context_text, question=query_text)
     # print(prompt)
 
-    model = OllamaLLM(model="gemma3", host="host.docker.internal", port=11434)
+    #model = OllamaLLM(model="gemma3", host="host.docker.internal", port=11434)
+    
+    OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "localhost")
+    OLLAMA_PORT = int(os.environ.get("OLLAMA_PORT", "11434"))
+
+    model = OllamaLLM(model="gemma3", host=OLLAMA_HOST, port=OLLAMA_PORT)
+
     try:
         response_text = model.invoke(prompt)
     except Exception as e:

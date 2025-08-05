@@ -12,4 +12,4 @@ if [[ -z "$REMOTE_USER" || -z "$REMOTE_HOST" ]]; then
 fi
 
 # Starts the reverse SSH tunnel
-ssh -i ~/.ssh/id_rsa -N -R 11434:localhost:11434 $REMOTE_USER@$REMOTE_HOST
+ssh -N -R 11434:localhost:11434 $REMOTE_USER@$REMOTE_HOST
