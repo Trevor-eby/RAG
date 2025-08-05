@@ -1,22 +1,24 @@
-# Use Ollama as base image
-FROM ollama/ollama
+FROM python:3.10-slim
 
-# Install Python and other tools
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    pip3 install --upgrade pip
+# System dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set workdir
+# Create app directory
 WORKDIR /app
 
-# Copy your code
+# Copy requirements and install
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy rest of the app
 COPY . .
 
-# Install Python dependencies
-RUN pip3 install -r requirements.txt
+# Expose API port
+EXPOSE 8080
 
-# Expose Ollama's port
-EXPOSE 11434
-
-# Run Ollama in the background and then start your app
-CMD ollama serve & sleep 5 && python3 backend/api.py
+# Start FastAPI app
+CMD ["python", "backend/api.py"]

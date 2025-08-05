@@ -39,15 +39,10 @@ def query_rag(query_text: str):
     prompt = prompt_template.format(context=context_text, question=query_text)
     # print(prompt)
 
-    #model = OllamaLLM(model="gemma3", host="host.docker.internal", port=11434)
+    model = OllamaLLM(model="gemma3", host="host.docker.internal", port=11434)
     
     #OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "localhost")
     #OLLAMA_PORT = int(os.environ.get("OLLAMA_PORT", "11434"))
-
-    host = os.getenv("OLLAMA_HOST", "localhost")
-    port = int(os.getenv("OLLAMA_PORT", 11434))
-    model = OllamaLLM(model="gemma3", host=host, port=port)
-
 
     try:
         response_text = model.invoke(prompt)
