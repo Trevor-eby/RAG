@@ -1,34 +1,24 @@
+import os
 import requests
+from dotenv import load_dotenv
 
-class RemoteEmbedding:
-    def __init__(self, api_url: str):
-        self.api_url = api_url
+# Load from .env file
+load_dotenv()
+HF_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
-    def embed_query(self, text: str):
-        response = requests.post(
-            f"{self.api_url}/embed",  # adjust endpoint accordingly
-            json={"text": text},
-            timeout=10,
-        )
-        response.raise_for_status()
-        embedding = response.json().get("embedding")
-        if embedding is None:
-            raise ValueError("Embedding not found in response")
-        return embedding
+HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
-    def embed_documents(self, texts: list[str]):
-        response = requests.post(
-            f"{self.api_url}/embed_batch",  # if your API supports batch embedding
-            json={"texts": texts},
-            timeout=10,
-        )
-        response.raise_for_status()
-        embeddings = response.json().get("embeddings")
-        if embeddings is None:
-            raise ValueError("Embeddings not found in response")
-        return embeddings
+def embed_text(text: str):
+    if HF_API_KEY is None:
+        raise ValueError("Missing Hugging Face API key in environment.")
 
-# Usage example:
-def get_embedding_function():
-    API_URL = " http://127.0.0.1:11434/api/tags"  # replace with your actual URL
-    return RemoteEmbedding(API_URL)
+    url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{HF_EMBEDDING_MODEL}"
+    headers = {
+        "Authorization": f"Bearer {HF_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    json_data = {"inputs": text}
+
+    response = requests.post(url, headers=headers, json=json_data)
+    response.raise_for_status()  # Will raise error for non-200 responses
+    return response.json()
