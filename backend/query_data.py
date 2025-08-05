@@ -50,6 +50,8 @@ def query_rag(query_text: str):
         print(f"Error calling model.invoke: {e}")
         response_text = "Sorry, there was an error processing your request."
 
+    print("🔍 Prompt sent to model:\n", prompt)
+    print("📨 Raw response:\n", response_text)
 
     sources = [doc.metadata.get("id", None) for doc, _score in results]
     formatted_response = f"\nResponse: {response_text}\n\nSources: {sources}\n"

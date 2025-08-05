@@ -19,16 +19,30 @@ const createMessageElement = (content, ...classes) => {
 };
 
 //Generate response
-async function generateResponse(question) {
-    const response = await fetch(`${BASE_URL}/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json"},
-        body: JSON.stringify({ query_text: question }),
+async function generateResponse(message) {
+  try {
+    const response = await fetch("/ask", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: message }),
     });
 
+    if (!response.ok) {
+      const text = await response.text();  // Get plain text error
+      throw new Error(`Server error: ${text}`);
+    }
+
     const data = await response.json();
-    return data.response;
+    return data.answer;
+
+  } catch (error) {
+    console.error("Error:", error.message);
+    return "Sorry, something went wrong.";
+  }
 }
+
 
 //Handle outgoing user messages
 const handleOutgoingMessage = async (e) => {

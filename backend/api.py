@@ -1,13 +1,15 @@
+import traceback
 from fastapi import FastAPI, Request, UploadFile, File
 from fastapi import HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from backend.query_data import query_rag
 from backend.file_processing import process_and_add_file_to_db
 import os
 import shutil
+import uvicorn
 
 app = FastAPI()
 
@@ -57,7 +59,13 @@ async def upload_file(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-import uvicorn
+@app.exception_handler(Exception)
+async def internal_exception_handler(request: Request, exc: Exception):
+    print(f"🔥 Internal Server Error:\n{traceback.format_exc()}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error"},
+    )
 
 if __name__ == "__main__":
     uvicorn.run("backend.api:app", host="0.0.0.0", port=8080)
