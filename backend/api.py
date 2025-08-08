@@ -49,12 +49,14 @@ async def ask_question(req: QueryRequest):
     question = req.query_text.strip()
     if not question:
         raise HTTPException(status_code=400, detail="Question cannot be empty")
-
     try:
         answer = query_rag(question)
         return {"answer": answer}
     except Exception as e:
+        import traceback
+        print("🔥 /ask error:\n", traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
     
 UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -63,20 +65,22 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 async def upload_file(file: UploadFile = File(...)):
     file_path = os.path.join(UPLOAD_DIR, file.filename)
 
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    await file.close()
-
     try:
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        await file.close()
+
         new_chunks_added = process_and_add_file_to_db(file_path)
 
         if new_chunks_added:
             return {"message": f"{file.filename} uploaded and processed successfully with new chunks."}
         else:
             return {"message": f"{file.filename} uploaded, but no new chunks to add."}
-
     except Exception as e:
+        import traceback
+        print("🔥 Upload processing error:\n", traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.exception_handler(Exception)
 async def internal_exception_handler(request: Request, exc: Exception):

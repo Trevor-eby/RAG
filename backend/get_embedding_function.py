@@ -1,5 +1,5 @@
 # backend/get_embedding_function.py
-from langchain_community.embeddings import HuggingFaceHubEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 import os
 from dotenv import load_dotenv
 
@@ -9,10 +9,10 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 def get_embedding_function():
     if not HF_API_KEY:
-        raise ValueError("Missing Hugging Face API key in environment.")
-    return HuggingFaceHubEmbeddings(
-        repo_id=MODEL_NAME,
-        huggingfacehub_api_token=HF_API_KEY
+        raise ValueError("Missing Hugging Face API key")
+    return HuggingFaceEndpointEmbeddings(
+        endpoint_url="https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2",
+        huggingfacehub_api_token=HF_API_KEY,
     )
 
     # if not HF_API_KEY:
