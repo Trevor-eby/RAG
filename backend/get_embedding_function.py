@@ -3,6 +3,7 @@
 import os
 import requests
 from dotenv import load_dotenv
+from langchain_community.embeddings import HuggingFaceHubEmbeddings
 
 # Load from .env file
 load_dotenv()
@@ -15,7 +16,7 @@ def get_embedding_function():
     This follows the factory pattern - returning a function rather than embeddings directly.
     """
     
-    if HF_API_KEY is None:
+    if not HF_API_KEY:
         raise ValueError("Missing Hugging Face API key in environment.")
     
     # Set up the API configuration once
@@ -41,13 +42,13 @@ def get_embedding_function():
         json_data = {"inputs": text}
         
         try:
-            response = requests.post(url, headers=headers, json=json_data)
+            response = requests.post(url, headers=headers, json=json_data, timeout=30)
             response.raise_for_status()  # Will raise error for non-200 responses
             
             result = response.json()
             
             # Handle different response formats from HF API
-            if isinstance(result, list) and len(result) > 0:
+            if isinstance(result, list) and result:
                 # If it's a list of embeddings, take the first one
                 if isinstance(result[0], list):
                     return result[0]

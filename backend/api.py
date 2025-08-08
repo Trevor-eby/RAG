@@ -1,15 +1,21 @@
 import traceback
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request, UploadFile, File
 from fastapi import HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from backend.get_embedding_function import get_embedding_function
 from backend.query_data import query_rag
 from backend.file_processing import process_and_add_file_to_db
 import os
 import shutil
 import uvicorn
+
+# Load environment variables from .env
+load_dotenv()
+
 
 app = FastAPI()
 
@@ -24,6 +30,12 @@ app.add_middleware(
 class QueryRequest(BaseModel):
     query_text: str
 
+# Load embedding function once at startup
+try:
+    embed_text = get_embedding_function()
+except Exception as e:
+    raise RuntimeError(f"Failed to initialize embedding function: {e}")
+
 #Serve static files
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
 
@@ -33,10 +45,25 @@ def read_index():
     return FileResponse("frontend/webfront.html")
 
 @app.post("/ask")
-def ask_question(request: QueryRequest):
-    response = query_rag(request.query_text)
-    return {"response": response}
+def ask_question(req: QueryRequest):
+    """
+    Handles incoming questions and returns embeddings (for now).
+    In your real app, you'll replace this with RAG logic.
+    """
+    question = req.question.strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="Question cannot be empty")
 
+    try:
+        embedding = embed_text(question)
+        return {
+            "question": question,
+            "embedding": embedding,
+            "dim": len(embedding)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
