@@ -8,7 +8,7 @@ from langchain_community.embeddings import HuggingFaceHubEmbeddings
 # Load from .env file
 load_dotenv()
 HF_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
-HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+#HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 def get_embedding_function():
     """
@@ -20,7 +20,7 @@ def get_embedding_function():
         raise ValueError("Missing Hugging Face API key in environment.")
     
     # Set up the API configuration once
-    url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{HF_EMBEDDING_MODEL}"
+    url = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
     headers = {
         "Authorization": f"Bearer {HF_API_KEY}",
         "Content-Type": "application/json"
