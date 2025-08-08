@@ -55,7 +55,7 @@ def ask_question(req: QueryRequest):
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
     try:
-        embedding = embed_text(question)
+        embedding = embed_text.embed_query(question)
         return {
             "question": question,
             "embedding": embedding,
