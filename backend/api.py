@@ -50,7 +50,7 @@ def ask_question(req: QueryRequest):
     Handles incoming questions and returns embeddings (for now).
     In your real app, you'll replace this with RAG logic.
     """
-    question = req.question.strip()
+    question = req.query_text.strip()
     if not question:
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
