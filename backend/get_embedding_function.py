@@ -8,7 +8,7 @@ HF_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 HF_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
-def embed_text(text: str):
+def get_embedding_function(text: str):
     if HF_API_KEY is None:
         raise ValueError("Missing Hugging Face API key in environment.")
 
