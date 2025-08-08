@@ -18,6 +18,10 @@ const createMessageElement = (content, ...classes) => {
     return div;
 };
 
+const scrollChatToBottom = () => {
+  chatBody.scrollTop = chatBody.scrollHeight;
+};
+
 //Generate response
 async function generateResponse(message) {
     try {
@@ -34,6 +38,10 @@ async function generateResponse(message) {
     }
 
     const data = await response.json();
+    // Assuming backend returns { answer: "...", ... }
+    if (!data.answer) {
+      throw new Error("Invalid response format");
+    }
     return data.answer;
 
   } catch (error) {
@@ -52,6 +60,8 @@ const handleOutgoingMessage = async (e) => {
 
     //Clears input
     messageInput.value = "";
+    sendMessageButton.disabled = true;
+    messageInput.disabled = true;
 
     // Show user message immediately
     const userMessageDiv = createMessageElement(`<div class="message-text">${message}</div>`, "user-message");
@@ -74,19 +84,17 @@ const handleOutgoingMessage = async (e) => {
     );
     chatBody.appendChild(loadingDiv);
 
+    scrollChatToBottom();
+
     //Await the actual response
     const responseText = await generateResponse(message);
-
-    // Scroll to bottom
-    chatBody.scrollTop = chatBody.scrollHeight;
 
     try {
         // Replace loading indicator with response
         loadingDiv.classList.remove("thinking");
         loadingDiv.innerHTML = `<div class="message-text">${responseText}</div>`;
 
-        // Scroll to bottom again after response
-        chatBody.scrollTop = chatBody.scrollHeight;
+        scrollChatToBottom();
     }
     catch (error) {
         loadingDiv.classList.remove("thinking");
@@ -94,16 +102,25 @@ const handleOutgoingMessage = async (e) => {
         console.error("Error:", error);
     }
 
-    // Scroll to bottom again
-    chatBody.scrollTop = chatBody.scrollHeight;
+    scrollChatToBottom();
+
+    sendMessageButton.disabled = false;
+    messageInput.disabled = false;
+    messageInput.focus();
 }
 
 //Handle Enter key press for sending messages
 messageInput.addEventListener("keydown", (e) => {
-    const userMessage = e.target.value.trim();
-    if(e.key === "Enter" && userMessage) {
-        handleOutgoingMessage(e);
-    }
+    // Only send on Enter (no shift or ctrl)
+  if (
+    e.key === "Enter" &&
+    !e.shiftKey &&
+    !e.ctrlKey &&
+    e.target.value.trim() !== ""
+  ) {
+    e.preventDefault();
+    handleOutgoingMessage(e);
+  }
 });
 
 fileInput.addEventListener("change", async () => {
@@ -129,41 +146,34 @@ fileInput.addEventListener("change", async () => {
 
 
     chatBody.appendChild(fileMessageDiv);
-    chatBody.scrollTop = chatBody.scrollHeight;
+    scrollChatToBottom();
 
     try {
-        const response = await fetch(`${BASE_URL}/upload`, {
-        method: "POST",
-        body: formData,
+    const response = await fetch(`${BASE_URL}/upload`, {
+      method: "POST",
+      body: formData,
     });
 
-    console.log("Response status:", response.status);
-
     if (!response.ok) {
-        let errorMsg = "Unknown error";
-        try {
-            const errorResult = await response.json();
-            errorMsg = errorResult.detail || JSON.stringify(errorResult);
-        } 
-        catch {
-            errorMsg = await response.text();
-        }
-        throw new Error(errorMsg);
+      let errorMsg = "Unknown error";
+      try {
+        const errorResult = await response.json();
+        errorMsg = errorResult.detail || JSON.stringify(errorResult);
+      } catch {
+        errorMsg = await response.text();
+      }
+      throw new Error(errorMsg);
     }
 
     const result = await response.json();
-    console.log("Upload success:", result);
     alert(result.message || "File uploaded successfully!");
-
-    const chatBox = document.querySelector(".chat-body");
-    const userMessage = document.createElement("div");
-    userMessage.className = "message user-message";
-
-    } 
-    catch (error) {
-        console.error("Upload failed:", error);
-        //alert("File upload failed: " + error.message);
-    }
+  } catch (error) {
+    console.error("Upload failed:", error);
+    alert("File upload failed: " + error.message);
+  } finally {
+    // Reset file input to allow uploading same file again if needed
+    fileInput.value = "";
+  }
 });
 
 // Handle send button click

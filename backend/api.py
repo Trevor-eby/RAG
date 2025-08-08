@@ -45,22 +45,14 @@ def read_index():
     return FileResponse("frontend/webfront.html")
 
 @app.post("/ask")
-def ask_question(req: QueryRequest):
-    """
-    Handles incoming questions and returns embeddings (for now).
-    In your real app, you'll replace this with RAG logic.
-    """
+async def ask_question(req: QueryRequest):
     question = req.query_text.strip()
     if not question:
         raise HTTPException(status_code=400, detail="Question cannot be empty")
 
     try:
-        embedding = embed_text.embed_query(question)
-        return {
-            "question": question,
-            "embedding": embedding,
-            "dim": len(embedding)
-        }
+        answer = query_rag(question)
+        return {"answer": answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
